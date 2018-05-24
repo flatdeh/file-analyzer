@@ -4,23 +4,26 @@ import java.io.*;
 
 public class FileAnalyzer {
     public static void main(String[] args) throws IOException {
-//        if (args.length != 2) {
-//            throw new IllegalArgumentException("Invalid number of argument!");
-//        }
+        if (args.length != 2) {
+            throw new IllegalArgumentException("Invalid number of argument!");
+        }
 
-        //String path = args[0];
-        String path = "file";
-        //String word = args[1];
-        String word = "год";
+        String path = args[0];
+        String word = args[1];
+
         int wordCount = 0;
 
         File file = new File(path);
-        StringBuilder sentence = new StringBuilder();
+
+        if (!file.exists()) {
+            throw new FileNotFoundException("File \"" + path + "\" not found!");
+        }
 
         try (InputStream inputStream = new FileInputStream(file);
              BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
 
             String text;
+            StringBuilder sentence = new StringBuilder();
             while ((text = bufferedReader.readLine()) != null) {
                 int startIndex = 0;
                 int textEnd = text.length() - 1;
@@ -30,12 +33,14 @@ public class FileAnalyzer {
                     if (currentChar == '.' || currentChar == '!' || currentChar == '?') {
                         sentence.append(text, startIndex, i + 1);
 
-                        int countInSentence = countOfWord(sentence.toString(), word);
+                        String stringSentence = sentence.toString();
+
+                        int countInSentence = countOfWord(stringSentence, word);
 
                         wordCount += countInSentence;
 
                         if (countInSentence > 0) {
-                            System.out.println(sentence.toString().trim());
+                            System.out.println(stringSentence.trim());
                         }
 
                         sentence.delete(0, sentence.length());
@@ -47,7 +52,6 @@ public class FileAnalyzer {
                 }
             }
         }
-
         System.out.println(wordCount);
     }
 
